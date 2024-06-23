@@ -16,10 +16,13 @@ def on_press(key):
     try:
         if key.char == ',':
             running = not running
+            update_status_label()  # Update the status label
             if running:
                 print("Starting the program.")
+                update_start_label()  # Update the start label
             else:
                 print("Stopping the program.")
+                update_stop_label()  # Update the stop label
     except AttributeError:
         pass
 
@@ -86,6 +89,17 @@ def create_ui():
 
     tk.Button(root, text="Update Release Duration", command=on_update_release_duration).pack(pady=10)
 
+    global status_label, start_label, stop_label
+
+    status_label = tk.Label(root, text="Status: Stopped", fg="red")
+    status_label.pack(pady=5)
+
+    start_label = tk.Label(root, text="", fg="green")
+    start_label.pack(pady=5)
+
+    stop_label = tk.Label(root, text="", fg="red")
+    stop_label.pack(pady=5)
+
     tk.Label(root, text="Press ',' to start/stop the program.").pack(pady=5)
     tk.Label(root, text="Press 'ESC' to exit the listener.").pack(pady=5)
 
@@ -107,9 +121,22 @@ def main_loop():
     except KeyboardInterrupt:
         print("Program interrupted by user")
 
+# Keyboard listener function
 def start_listener():
     listener = keyboard.Listener(on_press=on_press, on_release=on_release)
     listener.start()
+
+def update_status_label():
+    if running:
+        status_label.config(text="Status: Running", fg="green")
+    else:
+        status_label.config(text="Status: Stopped", fg="red")
+
+def update_start_label():
+    start_label.config(text=f"Started at {time.strftime('%H:%M:%S')}", fg="green")
+
+def update_stop_label():
+    stop_label.config(text=f"Stopped at {time.strftime('%H:%M:%S')}", fg="red")
 
 if __name__ == "__main__":
     # Start the keyboard listener in a separate thread
